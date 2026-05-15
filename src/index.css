@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties (Theme Tokens) ─── */
+:root {
+  --bg: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-elevated: #1e1e1e;
+  --text-primary: #e8e8e3;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #ff5f1f;
+  --accent-glow: rgba(255, 95, 31, 0.4);
+}
+
+:root.light {
+  --bg: #f5f5f0;
+  --bg-surface: #eaeae5;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --border: rgba(0, 0, 0, 0.08);
+  --accent: #e85a19;
+  --accent-glow: rgba(232, 90, 25, 0.25);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    @apply font-sans antialiased overflow-x-hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+}
+
+/* ─── Grain Texture (lightweight, GPU composited) ─── */
+.grain {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  will-change: auto;
+}
+
+/* ─── Navbar Glass ─── */
+.frosted {
+  backdrop-filter: blur(16px);
+  background-color: rgba(var(--bg), 0.7);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Buttons ─── */
+.btn-primary {
+  @apply relative overflow-hidden px-8 py-3 rounded-full font-medium text-sm
+    flex items-center justify-center transition-all duration-200
+    active:scale-95;
+  background-color: var(--accent);
+  color: #fff;
+  border: 1px solid rgba(255, 143, 90, 0.3);
+  box-shadow: 0 0 30px -8px var(--accent-glow);
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 40px -5px var(--accent-glow);
+}
+
+.btn-ghost {
+  @apply relative px-8 py-3 rounded-full font-medium text-sm
+    flex items-center justify-center transition-all duration-200
+    active:scale-95;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ─── Halftone Circle (static, no animation, pure CSS) ─── */
+.halftone-circle {
+  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 2px);
+  background-size: 10px 10px;
+}
+
+/* ─── Glow text ─── */
+.glow-text {
+  text-shadow: 0 0 30px var(--accent-glow), 0 0 80px rgba(255,95,31,0.15);
+}
+
+/* ─── Smooth Lenis overrides ─── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
