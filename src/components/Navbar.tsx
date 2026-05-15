@@ -33,6 +33,15 @@ const Navbar = () => {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
+          {/* Docs link */}
+          <Link
+            to="/docs"
+            className="hidden md:inline text-xs font-mono tracking-wide transition-colors duration-300 hover:opacity-80"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Docs
+          </Link>
+
           {/* Search */}
           <div
             className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md w-56 text-sm cursor-pointer"
