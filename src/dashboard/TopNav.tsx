@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Command, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, Command, Bell, BookOpen } from 'lucide-react';
 import CommandPalette from './CommandPalette';
 
 export default function TopNav() {
@@ -38,6 +39,12 @@ export default function TopNav() {
             <Command className="w-2.5 h-2.5" />K
           </kbd>
         </button>
+
+        {/* Docs */}
+        <Link to="/docs" className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-white/30 hover:text-white/50 hover:bg-white/[0.04] transition-colors text-[12px]">
+          <BookOpen className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Docs</span>
+        </Link>
 
         {/* Notifications */}
         <button className="relative w-8 h-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-colors">
