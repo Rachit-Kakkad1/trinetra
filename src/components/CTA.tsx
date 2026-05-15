@@ -28,13 +28,13 @@ const CTA = () => {
         </motion.div>
         
         <div className="flex flex-wrap justify-center gap-8 relative z-10">
-          <Link to="/dashboard">
+          <Link to="/onboarding">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-12 py-6 rounded-2xl bg-white text-black font-syne font-black text-xl hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all"
             >
-              Launch Dashboard →
+              Get Started →
             </motion.button>
           </Link>
           <motion.button 
