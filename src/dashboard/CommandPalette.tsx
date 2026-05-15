@@ -2,177 +2,157 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
 import Fuse from 'fuse.js';
-import { Search, Bot, Zap, Scissors, Mic, Rocket, Map, Activity, BarChart, Settings, Play, Database, History, CornerDownLeft, Target, GitCommit, Handshake } from 'lucide-react';
+import {
+  Search, Target, Scissors, Mic, Rocket, Network,
+  BarChart3, LayoutDashboard, Settings, Play, Database,
+  CornerDownLeft, Handshake, GitCommit, Globe, Map
+} from 'lucide-react';
 
 const DATA = [
-  // AGENTS
-  { id: 'jobscout', title: 'JobScout', subtitle: 'Autonomous job scanning', category: 'AGENTS', icon: Search },
-  { id: 'fitscorer', title: 'FitScorer', subtitle: 'RAG-powered matching', category: 'AGENTS', icon: Target },
-  { id: 'cvtailor', title: 'CVTailor', subtitle: 'Surgical ATS optimization', category: 'AGENTS', icon: Scissors },
-  { id: 'voicecoach', title: 'VoiceCoach', subtitle: 'Live interview sim', category: 'AGENTS', icon: Mic },
-  { id: 'applypilot', title: 'ApplyPilot', subtitle: 'Headless form submission', category: 'AGENTS', icon: Rocket },
-  { id: 'negotiation', title: 'NegotiationSim', subtitle: 'Offer optimization AI', category: 'AGENTS', icon: Handshake },
-  
-  // COMMANDS
-  { id: 'cmd-generate-cv', title: 'Generate CV', subtitle: 'Create tailored resume for role', category: 'COMMANDS', icon: Database },
-  { id: 'cmd-interview-sim', title: 'Start Interview Simulation', subtitle: 'Voice AI mock interview', category: 'COMMANDS', icon: Play },
-  { id: 'cmd-scan', title: 'Scan Opportunities', subtitle: 'Trigger global market search', category: 'COMMANDS', icon: Activity },
-  { id: 'cmd-pipeline', title: 'Run Pipeline', subtitle: 'Execute full autonomous workflow', category: 'COMMANDS', icon: Settings },
-  { id: 'cmd-deep-analysis', title: 'Deep Company Analysis', subtitle: 'Culture & financials intel', category: 'COMMANDS', icon: Bot },
-  
-  // NAVIGATION
-  { id: 'nav-dashboard', title: 'Dashboard', subtitle: 'Main command center', category: 'NAVIGATION', icon: Map },
-  { id: 'nav-analytics', title: 'Analytics', subtitle: 'Match intelligence metrics', category: 'NAVIGATION', icon: BarChart },
-  { id: 'nav-pipeline', title: 'Pipeline', subtitle: 'Opportunity flow', category: 'NAVIGATION', icon: GitCommit },
-  { id: 'nav-reports', title: 'Reports', subtitle: 'System activity logs', category: 'NAVIGATION', icon: Database },
-  { id: 'nav-intel-map', title: 'Intelligence Map', subtitle: 'Global hiring hotspots', category: 'NAVIGATION', icon: Map },
-  
-  // COMPANIES
-  { id: 'comp-openai', title: 'OpenAI', subtitle: 'San Francisco, CA · 98% Match', category: 'COMPANIES', icon: Bot },
-  { id: 'comp-anthropic', title: 'Anthropic', subtitle: 'San Francisco, CA · 94% Match', category: 'COMPANIES', icon: Bot },
-  { id: 'comp-perplexity', title: 'Perplexity', subtitle: 'San Francisco, CA · 91% Match', category: 'COMPANIES', icon: Bot },
-  { id: 'comp-elevenlabs', title: 'ElevenLabs', subtitle: 'Remote · 88% Match', category: 'COMPANIES', icon: Bot },
-  { id: 'comp-scale', title: 'Scale AI', subtitle: 'San Francisco, CA · 85% Match', category: 'COMPANIES', icon: Bot },
+  // Agents
+  { id: 'jobscout',    title: 'JobScout',       subtitle: 'Job scanning agent',       category: 'Agents', icon: Search },
+  { id: 'fitscorer',   title: 'FitScorer',      subtitle: 'Match analysis',           category: 'Agents', icon: Target },
+  { id: 'cvtailor',    title: 'CVTailor',       subtitle: 'Resume optimization',      category: 'Agents', icon: Scissors },
+  { id: 'voicecoach',  title: 'VoiceCoach',     subtitle: 'Interview simulation',     category: 'Agents', icon: Mic },
+  { id: 'applypilot',  title: 'ApplyPilot',     subtitle: 'Autonomous applications',  category: 'Agents', icon: Rocket },
+  { id: 'negotiation', title: 'NegotiationSim', subtitle: 'Offer optimization',       category: 'Agents', icon: Handshake },
+
+  // Commands
+  { id: 'cmd-cv',        title: 'Generate CV',        subtitle: 'Create tailored resume',     category: 'Commands', icon: Database },
+  { id: 'cmd-interview', title: 'Mock Interview',      subtitle: 'Start voice simulation',     category: 'Commands', icon: Play },
+  { id: 'cmd-scan',      title: 'Scan Opportunities',  subtitle: 'Trigger global search',      category: 'Commands', icon: Search },
+  { id: 'cmd-pipeline',  title: 'Run Pipeline',        subtitle: 'Execute full workflow',       category: 'Commands', icon: Settings },
+  { id: 'cmd-analyze',   title: 'Company Analysis',    subtitle: 'Deep dive on target company', category: 'Commands', icon: Globe },
+
+  // Navigation
+  { id: 'nav-dash',      title: 'Dashboard',   subtitle: 'Overview',           category: 'Navigation', icon: LayoutDashboard },
+  { id: 'nav-analytics', title: 'Analytics',    subtitle: 'Performance data',   category: 'Navigation', icon: BarChart3 },
+  { id: 'nav-pipeline',  title: 'Pipeline',     subtitle: 'Opportunity flow',   category: 'Navigation', icon: GitCommit },
+  { id: 'nav-map',       title: 'Intel Map',    subtitle: 'Global hotspots',    category: 'Navigation', icon: Map },
 ];
 
-export default function CommandPalette({ open, setOpen }: { open: boolean, setOpen: (open: boolean) => void }) {
+export default function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
   const [search, setSearch] = useState('');
-  
-  // Toggle the menu when ⌘K is pressed
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen(true);
+        setOpen(!open);
       }
+      if (e.key === 'Escape') setOpen(false);
     };
-
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, [setOpen]);
+  }, [setOpen, open]);
+
+  // Reset search when closing
+  useEffect(() => {
+    if (!open) setSearch('');
+  }, [open]);
 
   const fuse = useMemo(() => new Fuse(DATA, {
     keys: ['title', 'subtitle', 'category'],
-    threshold: 0.3,
-    includeMatches: true
+    threshold: 0.35,
   }), []);
 
-  const results = search ? fuse.search(search).map(r => r.item) : DATA;
+  const results = search.trim() ? fuse.search(search).map(r => r.item) : DATA;
 
-  // Group results
-  const groupedResults = results.reduce((acc, item) => {
+  const grouped = results.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, typeof DATA>);
 
-  const categories = ['AGENTS', 'COMMANDS', 'NAVIGATION', 'COMPANIES'];
+  const categories = ['Agents', 'Commands', 'Navigation'];
 
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* Blur Overlay */}
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            animate={{ opacity: 1, backdropFilter: 'blur(16px)' }}
-            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-40 bg-black/60 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
           />
 
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+          {/* Panel */}
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: -20 }}
+              initial={{ opacity: 0, scale: 0.98, y: -8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="w-full max-w-[720px]"
+              exit={{ opacity: 0, scale: 0.98, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              className="w-full max-w-[560px] pointer-events-auto"
             >
-              <Command 
+              <Command
                 loop
-                className="w-full bg-dash-surface backdrop-blur-3xl rounded-[24px] border border-white/10 shadow-[0_0_100px_rgba(91,111,255,0.15)] overflow-hidden flex flex-col"
-                shouldFilter={false} // We handle filtering via Fuse.js
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setOpen(false);
-                }}
+                shouldFilter={false}
+                className="bg-[#18181b] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
               >
-                {/* Search Input */}
-                <div className="flex items-center px-4 border-b border-white/10 relative">
-                  <Search className="w-5 h-5 text-dash-primary mr-3" />
-                  <Command.Input 
+                {/* Input */}
+                <div className="flex items-center gap-3 px-4 border-b border-white/[0.06]">
+                  <Search className="w-4 h-4 text-white/30 flex-shrink-0" />
+                  <Command.Input
                     autoFocus
-                    placeholder="Search agents, jobs, commands, companies..."
+                    placeholder="Type a command or search..."
                     value={search}
                     onValueChange={setSearch}
-                    className="w-full bg-transparent border-none text-lg text-white placeholder-white/30 h-16 focus:outline-none focus:ring-0 font-sans"
+                    className="w-full bg-transparent text-[14px] text-white placeholder-white/30 h-12 focus:outline-none"
                   />
-                  <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-dash-primary to-transparent opacity-50"></div>
                 </div>
 
-                {/* Command List */}
-                <Command.List className="max-h-[400px] overflow-y-auto scrollbar-hide p-2 py-4">
+                {/* Results */}
+                <Command.List className="max-h-[320px] overflow-y-auto p-1.5">
                   {results.length === 0 && (
-                    <div className="py-14 text-center">
-                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-                        <Activity className="w-6 h-6 text-white/30" />
-                      </div>
-                      <p className="text-white/50 font-mono text-sm">No neural matches detected.</p>
-                      <p className="text-white/30 text-xs mt-2">Try scanning a different sector.</p>
+                    <div className="py-12 text-center">
+                      <p className="text-[13px] text-white/30">No results found.</p>
                     </div>
                   )}
 
-                  {categories.map(category => {
-                    if (!groupedResults[category]) return null;
+                  {categories.map(cat => {
+                    if (!grouped[cat]) return null;
                     return (
-                      <Command.Group 
-                        key={category} 
+                      <Command.Group
+                        key={cat}
                         heading={
-                          <div className="px-4 py-2 text-[10px] font-mono tracking-[0.2em] text-white/40 uppercase">
-                            {category}
+                          <div className="px-3 py-2 text-[11px] font-medium text-white/25 uppercase tracking-wider">
+                            {cat}
                           </div>
                         }
                       >
-                        {groupedResults[category].map((item, i) => {
+                        {grouped[cat].map((item) => {
                           const Icon = item.icon;
-                          
-                          // Custom highlighting for matching letters could be implemented here based on Fuse.js matches
-                          // For now we'll do a simple dynamic highlighting if search exists
-                          const titleParts = search ? item.title.split(new RegExp(`(${search})`, 'gi')) : [item.title];
+
+                          // Highlight matching text
+                          const highlightTitle = (title: string) => {
+                            if (!search.trim()) return title;
+                            const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                            const parts = title.split(regex);
+                            return parts.map((part, i) =>
+                              regex.test(part)
+                                ? <span key={i} className="text-white font-semibold">{part}</span>
+                                : <span key={i}>{part}</span>
+                            );
+                          };
 
                           return (
                             <Command.Item
                               key={item.id}
                               value={item.id}
                               onSelect={() => setOpen(false)}
-                              className="group relative flex items-center gap-4 px-4 py-3 mx-2 my-1 rounded-xl cursor-pointer aria-selected:bg-white/[0.06]"
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-white/60 aria-selected:bg-white/[0.06] aria-selected:text-white transition-colors mx-1"
                             >
-                              {/* Left Accent Bar */}
-                              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-dash-primary rounded-r-full transition-all duration-200 group-aria-selected:h-1/2 shadow-[0_0_10px_rgba(91,111,255,0.8)] opacity-0 group-aria-selected:opacity-100"></div>
-
-                              <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 group-aria-selected:text-dash-primary group-aria-selected:bg-dash-primary/10 group-aria-selected:border-dash-primary/30 transition-colors shadow-inner">
-                                <Icon className="w-5 h-5" />
+                              <Icon className="w-4 h-4 flex-shrink-0 opacity-50" strokeWidth={1.5} />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[13px]">{highlightTitle(item.title)}</div>
+                                <div className="text-[11px] text-white/25 truncate">{item.subtitle}</div>
                               </div>
-
-                              <div className="flex flex-col flex-1">
-                                <div className="text-white font-medium group-aria-selected:text-white transition-colors">
-                                  {titleParts.map((part, i) => 
-                                    part.toLowerCase() === search.toLowerCase() ? (
-                                      <span key={i} className="text-dash-warning font-bold drop-shadow-[0_0_8px_rgba(255,184,77,0.8)]">{part}</span>
-                                    ) : (
-                                      <span key={i}>{part}</span>
-                                    )
-                                  )}
-                                </div>
-                                <div className="text-white/40 text-xs mt-0.5">{item.subtitle}</div>
-                              </div>
-
-                              <div className="opacity-0 group-aria-selected:opacity-100 transition-opacity">
-                                <CornerDownLeft className="w-4 h-4 text-dash-primary" />
-                              </div>
-
-                              {/* Hover Glow Background */}
-                              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-dash-primary/0 via-dash-primary/5 to-transparent opacity-0 group-aria-selected:opacity-100 pointer-events-none"></div>
+                              <CornerDownLeft className="w-3.5 h-3.5 opacity-0 aria-selected:opacity-100 text-white/30 flex-shrink-0" />
                             </Command.Item>
                           );
                         })}
@@ -180,17 +160,14 @@ export default function CommandPalette({ open, setOpen }: { open: boolean, setOp
                     );
                   })}
                 </Command.List>
-                
-                {/* Footer bar */}
-                <div className="px-4 py-3 border-t border-white/10 bg-black/20 flex items-center justify-between">
-                   <div className="flex items-center gap-4 text-xs text-white/30 font-mono">
-                      <span className="flex items-center gap-1"><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">↑</kbd><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">↓</kbd> to navigate</span>
-                      <span className="flex items-center gap-1"><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">↵</kbd> to select</span>
-                   </div>
-                   <div className="flex items-center gap-2">
-                     <span className="w-1.5 h-1.5 rounded-full bg-dash-primary animate-pulse"></span>
-                     <span className="text-[10px] text-dash-primary font-mono tracking-widest uppercase">Neural Search Active</span>
-                   </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/[0.06] text-[11px] text-white/20 font-mono">
+                  <div className="flex gap-3">
+                    <span className="flex items-center gap-1"><kbd className="bg-white/[0.06] px-1 py-0.5 rounded text-[10px]">↑↓</kbd> navigate</span>
+                    <span className="flex items-center gap-1"><kbd className="bg-white/[0.06] px-1 py-0.5 rounded text-[10px]">↵</kbd> select</span>
+                    <span className="flex items-center gap-1"><kbd className="bg-white/[0.06] px-1 py-0.5 rounded text-[10px]">esc</kbd> close</span>
+                  </div>
                 </div>
               </Command>
             </motion.div>

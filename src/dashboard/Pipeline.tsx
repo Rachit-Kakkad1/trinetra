@@ -1,72 +1,68 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { GitCommit, Search, Zap, CheckCircle2, Send, Rocket } from 'lucide-react';
+import { CheckCircle2, Circle, ArrowRight, Clock } from 'lucide-react';
 
 const stages = [
-  { name: 'SCAN', count: 1204, active: true, icon: Search, color: 'text-blue-400', border: 'border-blue-400/30' },
-  { name: 'SCORE', count: 48, active: true, icon: Zap, color: 'text-orange-400', border: 'border-orange-400/30' },
-  { name: 'OPTIMIZE', count: 12, active: true, icon: CheckCircle2, color: 'text-purple-400', border: 'border-purple-400/30' },
-  { name: 'APPLY', count: 8, active: true, icon: Send, color: 'text-dash-primary', border: 'border-dash-primary/30' },
-  { name: 'INTERVIEW', count: 3, active: false, icon: Rocket, color: 'text-white/40', border: 'border-white/10' },
+  { name: 'Scan',      count: 1204, status: 'done' },
+  { name: 'Score',     count: 48,   status: 'done' },
+  { name: 'Optimize',  count: 12,   status: 'done' },
+  { name: 'Apply',     count: 8,    status: 'active' },
+  { name: 'Interview', count: 3,    status: 'pending' },
+  { name: 'Negotiate', count: 0,    status: 'pending' },
 ];
 
 export default function Pipeline() {
   return (
     <section>
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-          <GitCommit className="text-dash-secondary" /> Opportunity Flow
-        </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-[15px] font-semibold text-white/70">Pipeline</h2>
+        <span className="text-[12px] text-white/30">6 stages</span>
       </div>
 
-      <div className="relative w-full rounded-3xl border border-white/10 bg-black/20 p-8 lg:p-12 overflow-hidden flex flex-col backdrop-blur-xl">
-        <div className="flex flex-col lg:flex-row justify-between relative z-10">
-          
-          {/* Background Connecting Line */}
-          <div className="absolute top-1/2 left-10 right-10 h-1 bg-white/5 -translate-y-1/2 hidden lg:block rounded-full"></div>
-          {/* Animated Progress Line */}
-          <motion.div 
-            initial={{ width: "0%" }}
-            whileInView={{ width: "60%" }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute top-1/2 left-10 h-1 bg-gradient-to-r from-dash-primary via-dash-secondary to-dash-accent -translate-y-1/2 hidden lg:block rounded-full shadow-[0_0_15px_rgba(0,229,255,0.5)]"
-          ></motion.div>
-
-          {stages.map((stage, i) => {
-            const Icon = stage.icon;
-            return (
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <div className="flex items-center">
+          {stages.map((stage, i) => (
+            <React.Fragment key={stage.name}>
               <motion.div
-                key={stage.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="relative flex flex-col items-center group mb-10 lg:mb-0"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.06 }}
+                className={`flex flex-col items-center flex-1 group ${
+                  stage.status === 'pending' ? 'opacity-30' : ''
+                }`}
               >
-                {/* Number Badge */}
-                <div className="mb-6 font-mono text-3xl font-bold tracking-tighter" style={{ color: stage.active ? 'var(--text-primary)' : 'rgba(255,255,255,0.2)' }}>
-                  {stage.count}
+                {/* Icon */}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 border transition-colors ${
+                  stage.status === 'done'   ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' :
+                  stage.status === 'active' ? 'border-blue-500/30 bg-blue-500/10 text-blue-400' :
+                                              'border-white/[0.08] bg-white/[0.02] text-white/30'
+                }`}>
+                  {stage.status === 'done' ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : stage.status === 'active' ? (
+                    <Clock className="w-4 h-4 animate-pulse" />
+                  ) : (
+                    <Circle className="w-4 h-4" />
+                  )}
                 </div>
 
-                {/* Node */}
-                <div className={`w-16 h-16 rounded-full border-2 ${stage.border} flex items-center justify-center bg-dash-bg relative z-10 transition-transform duration-300 group-hover:scale-110 shadow-2xl`}>
-                  {stage.active && (
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className={`absolute inset-0 rounded-full ${stage.color.replace('text-', 'bg-')} blur-md opacity-30`}
-                    />
-                  )}
-                  <Icon className={`w-6 h-6 ${stage.color} relative z-10`} />
-                </div>
+                {/* Count */}
+                <span className="text-[20px] font-semibold tracking-[-0.03em] text-white leading-none">
+                  {stage.count.toLocaleString()}
+                </span>
 
                 {/* Label */}
-                <div className={`mt-6 font-mono text-sm tracking-widest uppercase font-bold ${stage.active ? 'text-white' : 'text-white/30'}`}>
-                  {stage.name}
-                </div>
+                <span className="text-[11px] text-white/30 mt-1.5 font-medium">{stage.name}</span>
               </motion.div>
-            )
-          })}
+
+              {/* Connector */}
+              {i < stages.length - 1 && (
+                <ArrowRight className={`w-4 h-4 flex-shrink-0 mx-1 ${
+                  stages[i + 1].status !== 'pending' ? 'text-white/20' : 'text-white/8'
+                }`} />
+              )}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </section>

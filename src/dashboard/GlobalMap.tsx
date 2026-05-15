@@ -1,43 +1,46 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe2 } from 'lucide-react';
+import { Clock } from 'lucide-react';
+
+const activity = [
+  { time: '2m ago',  event: 'JobScout scanned 1,204 new roles' },
+  { time: '5m ago',  event: 'FitScorer matched you to Anthropic — 94%' },
+  { time: '12m ago', event: 'CVTailor optimized resume for Scale AI' },
+  { time: '18m ago', event: 'ApplyPilot submitted Greenhouse application' },
+  { time: '1h ago',  event: 'NetworkMapper found referral path to Vercel CTO' },
+  { time: '2h ago',  event: 'VoiceCoach completed mock interview session' },
+];
 
 export default function GlobalMap() {
   return (
-    <section className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-          <Globe2 className="text-dash-primary" /> Intelligence Map
-        </h2>
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-[15px] font-semibold text-white/70">Activity</h3>
+        <Clock className="w-4 h-4 text-white/20" />
       </div>
 
-      <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.02] p-8 relative overflow-hidden flex flex-col justify-between min-h-[400px] backdrop-blur-xl">
-        <div className="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain opacity-10 blur-[1px]"></div>
-        
-        {/* Nodes */}
-        <div className="absolute top-[30%] left-[20%] w-3 h-3 bg-dash-primary rounded-full shadow-[0_0_20px_rgba(91,111,255,1)]">
-          <div className="absolute inset-0 bg-dash-primary rounded-full animate-ping opacity-50"></div>
-        </div>
-        <div className="absolute top-[40%] left-[80%] w-2 h-2 bg-dash-accent rounded-full shadow-[0_0_15px_rgba(0,255,178,1)]"></div>
-        <div className="absolute top-[25%] left-[50%] w-4 h-4 bg-dash-secondary rounded-full shadow-[0_0_25px_rgba(0,229,255,1)]">
-          <div className="absolute inset-0 bg-dash-secondary rounded-full animate-ping opacity-50"></div>
-        </div>
+      <div className="space-y-1">
+        {activity.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: i * 0.05 }}
+            className="flex items-start gap-3 py-2.5 border-b border-white/[0.04] last:border-0"
+          >
+            {/* Timeline dot */}
+            <div className="mt-1.5 flex flex-col items-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+            </div>
 
-        <div className="relative z-10 flex flex-col gap-4 max-w-xs mt-auto bg-black/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs text-white/50 uppercase">SF Bay Area</span>
-            <span className="text-dash-primary font-bold text-sm">Active</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs text-white/50 uppercase">London</span>
-            <span className="text-dash-secondary font-bold text-sm">Surging</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs text-white/50 uppercase">Singapore</span>
-            <span className="text-dash-accent font-bold text-sm">Stable</span>
-          </div>
-        </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[12px] text-white/50 leading-relaxed">{item.event}</div>
+            </div>
+
+            <span className="text-[11px] text-white/20 font-mono flex-shrink-0 mt-0.5">{item.time}</span>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }

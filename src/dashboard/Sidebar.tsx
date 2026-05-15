@@ -1,74 +1,120 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Network, Search, Zap, User, Settings, Database, MessageSquare, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import {
+  LayoutDashboard, Search, Zap, BarChart3, Settings, User,
+  ChevronLeft, ChevronRight
+} from 'lucide-react';
 
-const navItems = [
-  { icon: Search, label: 'Search', active: false },
-  { icon: Network, label: 'Pipeline', active: true },
-  { icon: Zap, label: 'Agents', active: false },
-  { icon: Database, label: 'Data', active: false },
-  { icon: MessageSquare, label: 'Comms', active: false },
-  { icon: Activity, label: 'Metrics', active: false },
+export type Page = 'overview' | 'discover' | 'agents' | 'insights' | 'profile' | 'settings';
+
+const navItems: { icon: typeof LayoutDashboard; label: string; page: Page }[] = [
+  { icon: LayoutDashboard, label: 'Overview', page: 'overview' },
+  { icon: Search,          label: 'Discover', page: 'discover' },
+  { icon: Zap,             label: 'Agents',   page: 'agents' },
+  { icon: BarChart3,       label: 'Insights', page: 'insights' },
+  { icon: User,            label: 'Profile',  page: 'profile' },
+  { icon: Settings,        label: 'Settings', page: 'settings' },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  activePage: Page;
+  onNavigate: (page: Page) => void;
+}
+
+export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <motion.aside 
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="w-20 lg:w-64 flex flex-col border-r border-white/5 bg-dash-surface backdrop-blur-3xl z-20 transition-all duration-500 hover:w-64 group/sidebar"
+    <motion.aside
+      animate={{ width: collapsed ? 72 : 240 }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      className="flex flex-col border-r border-white/[0.06] bg-[#09090b] relative z-20 select-none"
     >
-      <div className="p-6 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-dash-primary to-dash-secondary flex items-center justify-center font-bold shadow-[0_0_20px_rgba(91,111,255,0.4)] flex-shrink-0">
+      {/* Logo */}
+      <Link to="/" className="h-14 flex items-center px-5 gap-3 border-b border-white/[0.06] hover:bg-white/[0.02] transition-colors">
+        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-bold text-[11px] text-black tracking-tight flex-shrink-0">
           TO
         </div>
-        <span className="font-bold text-xl tracking-tight hidden lg:block group-hover/sidebar:block whitespace-nowrap opacity-0 lg:opacity-100 group-hover/sidebar:opacity-100 transition-opacity">
-          Talent-OS
-        </span>
-      </div>
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.span
+              initial={{ opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -4 }}
+              className="font-semibold text-[15px] tracking-[-0.02em] text-white whitespace-nowrap"
+            >
+              Talent-OS
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Link>
 
-      <nav className="flex-1 mt-10 flex flex-col gap-2 px-4">
-        {navItems.map((item, i) => {
+      {/* Nav */}
+      <nav className="flex-1 py-4 px-3 flex flex-col gap-1">
+        {navItems.map((item) => {
           const Icon = item.icon;
+          const isActive = activePage === item.page;
           return (
-            <motion.button
+            <button
               key={item.label}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.2 + i * 0.05 }}
-              className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-300 relative group overflow-hidden ${
-                item.active ? 'text-white' : 'text-white/40 hover:text-white hover:bg-white/5'
+              onClick={() => onNavigate(item.page)}
+              className={`flex items-center gap-3 h-10 rounded-lg transition-colors duration-150 relative overflow-hidden ${
+                collapsed ? 'justify-center px-0' : 'px-3'
+              } ${
+                isActive
+                  ? 'bg-white/[0.08] text-white'
+                  : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
               }`}
             >
-              {item.active && (
-                <div className="absolute inset-0 bg-dash-primary/10 border border-dash-primary/20 rounded-xl"></div>
-              )}
-              {item.active && (
-                <motion.div 
-                  layoutId="activeTab"
-                  className="absolute left-0 w-1 h-1/2 top-1/4 bg-dash-primary rounded-r-full shadow-[0_0_10px_rgba(91,111,255,1)]"
-                />
-              )}
-              <Icon className={`w-5 h-5 flex-shrink-0 relative z-10 ${item.active ? 'text-dash-primary' : ''}`} />
-              <span className="font-mono text-sm tracking-widest uppercase hidden lg:block group-hover/sidebar:block whitespace-nowrap relative z-10 opacity-0 lg:opacity-100 group-hover/sidebar:opacity-100 transition-opacity">
-                {item.label}
-              </span>
-            </motion.button>
+              <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={isActive ? 2 : 1.5} />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-[13px] font-medium whitespace-nowrap"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
           );
         })}
       </nav>
 
-      <div className="p-4 mt-auto">
-        <div className="p-3 flex items-center gap-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
-          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 relative">
-            <User className="w-5 h-5 text-white/70" />
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-dash-accent rounded-full border-2 border-dash-bg shadow-[0_0_10px_rgba(0,255,178,0.8)]"></div>
+      {/* Collapse toggle */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-20 w-6 h-6 bg-[#18181b] border border-white/[0.08] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-colors z-30"
+      >
+        {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+      </button>
+
+      {/* Profile */}
+      <div className="p-3 border-t border-white/[0.06]">
+        <div
+          onClick={() => onNavigate('profile')}
+          className={`flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors ${collapsed ? 'justify-center' : ''} ${activePage === 'profile' ? 'bg-white/[0.06]' : ''}`}
+        >
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-[11px] font-bold">
+            RK
           </div>
-          <div className="hidden lg:flex group-hover/sidebar:flex flex-col overflow-hidden">
-            <span className="font-bold text-sm whitespace-nowrap text-white/90">Rachit Kakkad</span>
-            <span className="font-mono text-[10px] text-dash-accent tracking-widest uppercase">System Admin</span>
-          </div>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col min-w-0"
+              >
+                <span className="text-[13px] font-medium text-white/90 truncate">Rachit Kakkad</span>
+                <span className="text-[11px] text-white/30">Pro Plan</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.aside>

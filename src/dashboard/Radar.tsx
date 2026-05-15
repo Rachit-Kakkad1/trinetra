@@ -1,66 +1,55 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Target } from 'lucide-react';
+
+const opportunities = [
+  { company: 'Anthropic',   role: 'Senior AI Engineer',    match: 94, status: 'Interview scheduled' },
+  { company: 'Vercel',      role: 'Staff Frontend Eng',    match: 91, status: 'Application sent' },
+  { company: 'Scale AI',    role: 'ML Infrastructure',     match: 88, status: 'Under review' },
+  { company: 'Stripe',      role: 'AI/ML Engineer',        match: 85, status: 'Scored' },
+];
 
 export default function Radar() {
   return (
-    <section className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-          <Target className="text-dash-warning" /> Career Radar
-        </h2>
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-[15px] font-semibold text-white/70">Top Opportunities</h3>
+        <span className="text-[12px] text-white/30">{opportunities.length} tracked</span>
       </div>
 
-      <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.02] p-6 relative overflow-hidden flex items-center justify-center min-h-[400px] backdrop-blur-xl">
-        <div className="relative w-64 h-64 md:w-80 md:h-80">
-          {/* Radar rings */}
-          {[1, 2, 3, 4].map((ring) => (
-            <div 
-              key={ring}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dash-warning/20"
-              style={{ width: `${ring * 25}%`, height: `${ring * 25}%` }}
-            ></div>
-          ))}
-
-          {/* Sweeping line */}
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent to-dash-warning/80 origin-left -translate-y-1/2"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(255,184,77,0.8))' }}
+      <div className="space-y-3">
+        {opportunities.map((opp, i) => (
+          <motion.div
+            key={opp.company}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.06 }}
+            className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group cursor-pointer"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[conic-gradient(from_270deg,transparent_0deg,rgba(255,184,77,0.2)_90deg,transparent_90deg)] -translate-y-1/2 translate-x-1/2 rounded-full blur-md mix-blend-screen"></div>
-          </motion.div>
-
-          {/* Targets */}
-          {[
-            { angle: 45, distance: 30, color: 'bg-dash-primary', label: 'OpenAI' },
-            { angle: 120, distance: 70, color: 'bg-dash-accent', label: 'Anthropic' },
-            { angle: 210, distance: 50, color: 'bg-white', label: 'Google' },
-            { angle: 300, distance: 85, color: 'bg-dash-secondary', label: 'Stripe' },
-          ].map((target, i) => (
-            <div
-              key={i}
-              className="absolute top-1/2 left-1/2"
-              style={{ 
-                transform: `rotate(${target.angle}deg) translateX(${target.distance}%) rotate(-${target.angle}deg)` 
-              }}
-            >
-              <div className={`relative group cursor-pointer`}>
-                <div className={`w-3 h-3 rounded-full ${target.color} shadow-[0_0_15px_currentColor]`}></div>
-                <div className={`absolute inset-0 rounded-full ${target.color} animate-ping opacity-50`}></div>
-                
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-2 py-1 rounded text-[10px] font-mono whitespace-nowrap border border-white/10 z-10">
-                  {target.label}
-                </div>
-              </div>
+            {/* Company avatar */}
+            <div className="w-9 h-9 rounded-lg bg-white/[0.06] flex items-center justify-center text-[12px] font-bold text-white/40 flex-shrink-0">
+              {opp.company[0]}
             </div>
-          ))}
 
-          {/* Center */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-dash-warning shadow-[0_0_20px_rgba(255,184,77,1)]"></div>
-        </div>
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-medium text-white/80 group-hover:text-white transition-colors truncate">
+                {opp.role}
+              </div>
+              <div className="text-[11px] text-white/30">{opp.company}</div>
+            </div>
+
+            {/* Match score */}
+            <div className="flex flex-col items-end flex-shrink-0">
+              <span className={`text-[14px] font-semibold tabular-nums ${
+                opp.match >= 90 ? 'text-emerald-400' : 'text-white/60'
+              }`}>
+                {opp.match}%
+              </span>
+              <span className="text-[10px] text-white/20">{opp.status}</span>
+            </div>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }
