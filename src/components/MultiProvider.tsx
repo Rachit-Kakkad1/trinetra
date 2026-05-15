@@ -178,17 +178,28 @@ const MultiProvider = () => {
           </div>
 
           {/* SVG Connector Lines */}
-          <div className="absolute top-[calc(100%-200px)] left-1/2 -translate-x-1/2 w-[600px] h-32 pointer-events-none hidden md:block">
-            <svg className="w-full h-full overflow-visible" viewBox="0 0 600 128">
-              <motion.path
-                d="M100 0 L300 120 M300 0 L300 120 M500 0 L300 120"
-                fill="none"
+          <div className="absolute w-full pointer-events-none hidden md:block" style={{ top: 'calc(100% - 220px)', left: 0, right: 0, height: '140px' }}>
+            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <motion.line
+                x1="16.67%" y1="0" x2="50%" y2="100%"
                 stroke={isDark ? 'rgba(255,95,31,0.2)' : 'rgba(255,95,31,0.15)'}
-                strokeWidth="1.5"
-                strokeDasharray="6 4"
-                initial={{ pathLength: 0 }}
-                animate={isInView ? { pathLength: 1 } : {}}
-                transition={{ duration: 1.5, delay: 0.5, ease: 'easeInOut' }}
+                strokeWidth="1" strokeDasharray="4 3"
+                initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}}
+                transition={{ duration: 1.5, delay: 0.5 }}
+              />
+              <motion.line
+                x1="50%" y1="0" x2="50%" y2="100%"
+                stroke={isDark ? 'rgba(255,95,31,0.2)' : 'rgba(255,95,31,0.15)'}
+                strokeWidth="1" strokeDasharray="4 3"
+                initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}}
+                transition={{ duration: 1.5, delay: 0.7 }}
+              />
+              <motion.line
+                x1="83.33%" y1="0" x2="50%" y2="100%"
+                stroke={isDark ? 'rgba(255,95,31,0.2)' : 'rgba(255,95,31,0.15)'}
+                strokeWidth="1" strokeDasharray="4 3"
+                initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}}
+                transition={{ duration: 1.5, delay: 0.9 }}
               />
             </svg>
           </div>
@@ -198,10 +209,10 @@ const MultiProvider = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mt-4"
+            className="relative mt-0"
           >
             <div
-              className="w-24 h-24 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-default"
+              className="w-20 h-20 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-default mx-auto"
               style={{
                 backgroundColor: isDark ? '#0f0f0f' : '#e8e8e3',
                 border: `2px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
@@ -210,12 +221,12 @@ const MultiProvider = () => {
               }}
             >
               <Settings
-                className="w-8 h-8 group-hover:rotate-90 transition-transform duration-700"
+                className="w-7 h-7 group-hover:rotate-90 transition-transform duration-700"
                 style={{ color: 'var(--text-primary)' }}
               />
             </div>
 
-            <div className="mt-6 flex flex-col items-center gap-1">
+            <div className="mt-5 flex flex-col items-center gap-1">
               <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase" style={{ color: 'var(--accent)' }}>
                 Multi-Model Router v2.4
               </span>

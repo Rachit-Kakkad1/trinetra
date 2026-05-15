@@ -1,79 +1,80 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Terminal } from 'lucide-react';
 
 const logs = [
-  "> INITIALIZING MULTI-AGENT SWARM...",
-  "> SYSTEM: Connected to secure websocket.",
-  "> JOBSCOUT: Scanned 14,204 roles in last 60s.",
-  "> FITSCORER: Analyzing Senior AI Engineer at Anthropic...",
-  "> FITSCORER: Match confidence: 94.2%. Skill overlap: high.",
-  "> CVTAILOR: Rewriting resume to highlight PyTorch scaling experience.",
-  "> CVTAILOR: Optimization complete. ATS score projected: 99%.",
-  "> APPLYPILOT: Initiating headless browser for workday instance.",
-  "> APPLYPILOT: Checksum verified. Form submitted.",
+  { agent: 'SCOUT',  msg: 'Scanned 14,204 roles across 45 portals', type: 'info' },
+  { agent: 'SCORER', msg: 'Sr. AI Engineer @ Anthropic — 94.2% match', type: 'success' },
+  { agent: 'TAILOR', msg: 'Resume rewrite complete. ATS score: 99%', type: 'success' },
+  { agent: 'PILOT',  msg: 'Workday form submitted — checksum OK', type: 'info' },
+  { agent: 'SCOUT',  msg: 'Found unlisted role via Discord: Vercel AI', type: 'info' },
+  { agent: 'SCORER', msg: 'ML Lead @ Scale AI — 87.1% match', type: 'info' },
+  { agent: 'MAPPER', msg: 'Referral path identified — 2 hops to CTO', type: 'success' },
+  { agent: 'PILOT',  msg: 'Greenhouse submission queued', type: 'info' },
 ];
 
+const agentColors: Record<string, string> = {
+  SCOUT:  'text-blue-400',
+  SCORER: 'text-amber-400',
+  TAILOR: 'text-violet-400',
+  PILOT:  'text-emerald-400',
+  MAPPER: 'text-pink-400',
+};
+
 export default function CommandCenter() {
-  const [displayedLogs, setDisplayedLogs] = useState<string[]>([]);
+  const [displayed, setDisplayed] = useState<typeof logs>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (currentIndex < logs.length) {
-        setDisplayedLogs(prev => [...prev, logs[currentIndex]]);
-        currentIndex++;
+    let idx = 0;
+    const timer = setInterval(() => {
+      if (idx < logs.length) {
+        setDisplayed(prev => [...prev, logs[idx]]);
+        idx++;
       } else {
-        clearInterval(interval);
+        clearInterval(timer);
       }
-    }, 1200);
-    return () => clearInterval(interval);
+    }, 1400);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [displayedLogs]);
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [displayed]);
 
   return (
-    <section className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-          <Terminal className="text-white/60" /> Command Center
-        </h2>
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] flex flex-col h-full min-h-[300px]">
+      {/* Title bar */}
+      <div className="flex items-center gap-2 px-5 h-11 border-b border-white/[0.06] flex-shrink-0">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+        </div>
+        <span className="text-[11px] text-white/25 font-mono ml-3">live feed</span>
       </div>
 
-      <div className="flex-1 rounded-3xl border border-white/10 bg-[#0a0a0c] p-6 relative overflow-hidden flex flex-col h-[320px]">
-        {/* CRT Scanline effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] pointer-events-none opacity-20 z-20"></div>
-        
-        <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/5 relative z-10">
-          <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
-          <span className="ml-4 font-mono text-[10px] text-white/30 tracking-widest uppercase">root@talent-os:~</span>
-        </div>
-
-        <div ref={scrollRef} className="flex-1 overflow-y-auto font-mono text-sm space-y-3 relative z-10 scrollbar-hide pr-4">
-          {displayedLogs.map((log, i) => (
-            <motion.div 
-              key={i} 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-white/70"
-            >
-              <span className="text-dash-secondary mr-3">{new Date().toLocaleTimeString('en-US', { hour12: false })}</span>
-              {log}
-            </motion.div>
-          ))}
-          <div className="flex items-center text-white/70">
-            <span className="text-dash-secondary mr-3">{new Date().toLocaleTimeString('en-US', { hour12: false })}</span>
-            <span className="w-2 h-4 bg-white/70 animate-pulse"></span>
-          </div>
+      {/* Log stream */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2">
+        {displayed.map((log, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex gap-3 text-[12px] font-mono leading-relaxed"
+          >
+            <span className={`font-semibold flex-shrink-0 w-14 text-right ${agentColors[log.agent] || 'text-white/40'}`}>
+              {log.agent}
+            </span>
+            <span className="text-white/50">{log.msg}</span>
+          </motion.div>
+        ))}
+        {/* Cursor */}
+        <div className="flex gap-3 text-[12px] font-mono">
+          <span className="w-14" />
+          <span className="w-[6px] h-[14px] bg-white/40 animate-pulse rounded-[1px]" />
         </div>
       </div>
-    </section>
+    </div>
   );
 }
